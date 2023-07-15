@@ -1,11 +1,19 @@
 const express = require('express')
+const mongoose = require('mongoose')
+const dotenv = require('dotenv')
+
 const app = express()
+mongoose.set('strictQuery', false)
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
 
-const PORT = 3000;
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config()
+}
 
+const PORT = process.env.PORT || 3000;
+const CONNECTION = process.env.CONNECTION
 const customers = [
     {
         "name": "Jay",
@@ -20,7 +28,6 @@ const customers = [
         "industry": "Business"
     }
 ]
-
 
 app.get('/api/customers', (req, res) => {
     res.send({"customers: ": customers})
@@ -39,6 +46,17 @@ app.post('/', (req, res) => {
     res.send('this is a post request')
 })
 
-app.listen(PORT, () => {
-    console.log('app listening on port ' + PORT);
-})
+
+const start = async () => {
+    try {
+        await mongoose.connect(CONNECTION)
+
+        app.listen(PORT, () => {
+            console.log('app listening on port ' + PORT);
+        })
+    } catch (error) {
+        console.error('err: ', error.message)
+    }
+}
+
+start()
