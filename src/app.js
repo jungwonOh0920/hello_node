@@ -1,7 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
-
+const Customer = require('./models/customers')
 const app = express()
 mongoose.set('strictQuery', false)
 
@@ -29,12 +29,22 @@ const customers = [
     }
 ]
 
-app.get('/api/customers', (req, res) => {
-    res.send({"customers: ": customers})
+const customer = new Customer({
+    name: 'Jay',
+    industry: 'sports science'
+});
+
+app.get('/api/customers', async (req, res) => {
+    try {
+        const result = await Customer.find()
+        res.json({"customers: ": result})
+    } catch (err) {
+        res.status(500).json({error: err.message})
+    }
 })
 
 app.get('/', (req, res) => {
-    res.send('Welcome!')
+    res.send('Welcome guys!')
 })
 
 app.post('/api/customers', (req, res) => {
