@@ -1,71 +1,84 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const dotenv = require('dotenv')
-const Customer = require('./models/customers')
+const Customer = require('./models/customer')
+
+dotenv.config()
 const app = express()
 mongoose.set('strictQuery', false)
 
 app.use(express.json())
 app.use(express.urlencoded({extended: true}))
-
-if (process.env.NODE_ENV !== 'production') {
-    dotenv.config()
-}
-
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000
 const CONNECTION = process.env.CONNECTION
+
 const customers = [
     {
-        "name": "Jay",
-        "industry": "Soccer"
+        'name': 'John',
+        'industry': 'soccer player'
     },
     {
-        "name": "Jessie",
-        "industry": "medical"
+        'name': 'Craig',
+        'industry': 'business owner'
     },
     {
-        "name": "Bob",
-        "industry": "Business"
+        'name': 'Phil',
+        'industry': 'realtor'
     }
 ]
 
-const customer = new Customer({
-    name: 'Jay',
-    industry: 'sports science'
-});
+app.get('/', (req, res) => {
+    res.send('Welcome')
+})
 
 app.get('/api/customers', async (req, res) => {
     try {
         const result = await Customer.find()
         res.json({"customers: ": result})
-    } catch (err) {
-        res.status(500).json({error: err.message})
+    } catch (e) {
+        res.status(500).json({error: e.message})
     }
 })
 
-app.get('/', (req, res) => {
-    res.send('Welcome guys!')
-})
+app.get('/api/customers/:id', async (req, res) => {
+    try {
+        const customer = await Customer.findById(req.params.id)
+        console.log(customer)
+        if (!customer) {
+            res.status(404).json({error: 'user not found'})
+        } else {
+            res.json({customer})
+        }
+    } catch (e) {
+        res.status(500).json({error: 'something went wrong'})
+    }
 
-app.post('/api/customers', (req, res) => {
-    console.log('req.body: ', req.body)
-    res.send(req.body)
 })
 
 app.post('/', (req, res) => {
-    res.send('this is a post request')
+    res.send('<h1>post method!</h1>')
 })
 
+app.post('/api/customers', async (req, res) => {
+    console.log('check: ', req.body)
+    const customer = new Customer(req.body)
+    try {
+        // await customer.save()
+        res.status(201).json({customer})
+    } catch (e) {
+        res.status(400).send({error: e.message})
+    }
+})
 
 const start = async () => {
     try {
-        await mongoose.connect(CONNECTION)
+        await mongoose.connect(CONNECTION);
 
-        app.listen(PORT, () => {
-            console.log('app listening on port ' + PORT);
+        app.listen(PORT, (req, res) => {
+            console.log('app listening on PORT ' + PORT);
         })
-    } catch (error) {
-        console.error('err: ', error.message)
+    } catch (e) {
+        console.log(e.message)
     }
 }
 

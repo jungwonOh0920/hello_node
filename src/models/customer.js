@@ -3,8 +3,11 @@ const mongoose = require('mongoose')
 // define model
 
 const customerSchema = new mongoose.Schema({
-    name: String,
+    name: {
+        type: String,
+        required: true
+    },
     industry: String
 })
 
-module.exports = mongoose.model('Clients', customerSchema)
+module.exports = mongoose.model('customer', customerSchema)
