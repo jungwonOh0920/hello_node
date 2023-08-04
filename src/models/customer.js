@@ -3,7 +3,10 @@ const mongoose = require('mongoose')
 // define model
 
 const customerSchema = new mongoose.Schema({
-    name: String,
+    name: {
+        type: String,
+        required: true
+    },
     industry: String
 })
 

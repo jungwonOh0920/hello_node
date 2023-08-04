@@ -15,22 +15,17 @@ const CONNECTION = process.env.CONNECTION
 const customers = [
     {
         'name': 'John',
-        'profession': 'soccer player'
+        'industry': 'soccer player'
     },
     {
         'name': 'Craig',
-        'profession': 'business owner'
+        'industry': 'business owner'
     },
     {
         'name': 'Phil',
-        'profession': 'realtor'
+        'industry': 'realtor'
     }
 ]
-
-const customer = new Customer({
-    name: 'Emily',
-    industry: 'Designer'
-})
 
 app.get('/', (req, res) => {
     res.send('Welcome')
@@ -45,13 +40,34 @@ app.get('/api/customers', async (req, res) => {
     }
 })
 
+app.get('/api/customers/:id', async (req, res) => {
+    try {
+        const customer = await Customer.findById(req.params.id)
+        console.log(customer)
+        if (!customer) {
+            res.status(404).json({error: 'user not found'})
+        } else {
+            res.json({customer})
+        }
+    } catch (e) {
+        res.status(500).json({error: 'something went wrong'})
+    }
+
+})
+
 app.post('/', (req, res) => {
     res.send('<h1>post method!</h1>')
 })
 
-app.post('/api/customers', (req, res) => {
+app.post('/api/customers', async (req, res) => {
     console.log('check: ', req.body)
-    res.send(req.body)
+    const customer = new Customer(req.body)
+    try {
+        // await customer.save()
+        res.status(201).json({customer})
+    } catch (e) {
+        res.status(400).send({error: e.message})
+    }
 })
 
 const start = async () => {
