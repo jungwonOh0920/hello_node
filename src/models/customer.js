@@ -7,4 +7,4 @@ const customerSchema = new mongoose.Schema({
     industry: String
 })
 
-module.exports = mongoose.model('Clients', customerSchema)
+module.exports = mongoose.model('customer', customerSchema)
