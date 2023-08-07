@@ -52,7 +52,17 @@ app.get('/api/customers/:id', async (req, res) => {
     } catch (e) {
         res.status(500).json({error: 'something went wrong'})
     }
+})
 
+app.put('/api/customers/:id', async (req, res) => {
+    try {
+        const customerId = req.params.id
+        const result = await Customer.replaceOne({_id: customerId}, req.body)
+        console.log('res: ', result)
+        res.json({updatedCount: result.modifiedCount})
+    } catch (e) {
+        res.status(500).json({error: 'something went wrong :('})
+    }
 })
 
 app.post('/', (req, res) => {
