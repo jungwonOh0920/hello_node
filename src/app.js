@@ -45,14 +45,24 @@ app.get('/api/customers/:id', async (req, res) => {
         const customer = await Customer.findById(req.params.id)
         console.log(customer)
         if (!customer) {
-            res.status(404).json({error: 'user not found'})
+            res.status(404).json({error: '404 - user not found'})
         } else {
             res.json({customer})
         }
     } catch (e) {
         res.status(500).json({error: 'something went wrong'})
     }
+})
 
+app.put('/api/customers/:id', async (req, res) => {
+    try {
+        const customerId = req.params.id
+        const result = await Customer.replaceOne({_id: customerId}, req.body)
+        console.log('res: ', result)
+        res.json({updatedCount: result.modifiedCount})
+    } catch (e) {
+        res.status(500).json({error: 'something went wrong :('})
+    }
 })
 
 app.post('/', (req, res) => {
@@ -67,6 +77,16 @@ app.post('/api/customers', async (req, res) => {
         res.status(201).json({customer})
     } catch (e) {
         res.status(400).send({error: e.message})
+    }
+})
+
+app.delete('/api/customers/:id', async (req, res) => {
+    try {
+        const customerId = req.params.id
+        const result = await Customer.deleteOne({_id: customerId})
+        res.json({deletedCount: result.deletedCount})
+    } catch (e) {
+        res.status(500).json({error: 'something went wrong. cannot delete it. '})
     }
 })
 
